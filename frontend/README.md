@@ -1,4 +1,7 @@
-# React + TypeScript + Vite
+# Ananta ERP — Frontend (React + TypeScript + Vite)
+
+React + Vite + TailwindCSS SPA for the Ananta Accounting & ERP system.
+Build: `npm run build` (`tsc -b && vite build`). Deployed on Vercel (root: `frontend`).
 
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 

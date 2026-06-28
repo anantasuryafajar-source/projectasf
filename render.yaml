@@ -12,7 +12,7 @@ services:
     runtime: docker
     dockerfilePath: ./backend/Dockerfile
     dockerContext: ./backend
-    plan: starter
+    plan: free
     healthCheckPath: /api/v1/
     autoDeploy: true
     envVars:

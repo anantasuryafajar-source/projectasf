@@ -14,8 +14,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
-      - run: npm ci
+      - run: npm install
       - run: npm run lint --workspace backend
       - run: npm run build --workspace backend
       - run: npm test --workspace backend
@@ -28,8 +27,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
-      - run: npm ci
+      - run: npm install
       - run: npm run lint --workspace frontend
       - run: npm run build --workspace frontend
 

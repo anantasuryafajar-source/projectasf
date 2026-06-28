@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { SupabaseService } from '../supabase/supabase.service';
 import { JournalLinePayload, JournalPostPayload } from '../database.types';
+import { AuditActor } from '../auth/auth-user.interface';
 import { CreateJournalDto } from './dto/create-journal.dto';
 
 /** Round to 2 decimals (currency precision) avoiding float drift. */
@@ -24,7 +25,7 @@ export class JournalService {
    * here for a fast 400, and again by the DB deferred trigger as a backstop.
    * Idempotent on idempotency_key (§6.2).
    */
-  async post(dto: CreateJournalDto) {
+  async post(dto: CreateJournalDto, actor?: AuditActor) {
     const rate = dto.exchange_rate ?? 1;
 
     const lines: JournalLinePayload[] = dto.items.map((item, idx) => {
@@ -68,8 +69,8 @@ export class JournalService {
     };
 
     const { data, error } = await this.supabase.client.rpc(
-      'post_journal_entry',
-      { p_payload: payload },
+      'audited_post_journal_entry',
+      { p: payload, _actor: actor?.id, _ip: actor?.ip },
     );
     // Balance / constraint violations surface here -> treat as client error.
     if (error) throw new BadRequestException(error.message);
@@ -93,6 +94,26 @@ export class JournalService {
     if (itemsErr) throw new InternalServerErrorException(itemsErr.message);
 
     return { ...entry, journal_items: items ?? [] };
+  }
+
+  /** Post a mirrored reversal of an entry; optionally void the original (§6.2). */
+  async reverse(id: string, voidOriginal = false, actor?: AuditActor) {
+    const { data, error } = await this.supabase.client.rpc(
+      'audited_reverse_journal_entry',
+      {
+        p_entry_id: id,
+        p_void: voidOriginal,
+        _actor: actor?.id,
+        _ip: actor?.ip,
+      },
+    );
+    if (error) {
+      if (error.message.includes('JOURNAL_NOT_FOUND')) {
+        throw new NotFoundException(error.message);
+      }
+      throw new BadRequestException(error.message);
+    }
+    return data;
   }
 
   async list(limit = 50) {

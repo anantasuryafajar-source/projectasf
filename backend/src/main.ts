@@ -19,8 +19,16 @@ async function bootstrap() {
     }),
   );
 
+  // Allow one or more comma-separated frontend origins (e.g. production
+  // domain + Vercel preview deploys). Falls back to the local dev origin.
+  const origins = (
+    config.get<string>('FRONTEND_ORIGIN') ?? 'http://localhost:5173'
+  )
+    .split(',')
+    .map((o) => o.trim())
+    .filter(Boolean);
   app.enableCors({
-    origin: config.get<string>('FRONTEND_ORIGIN') ?? 'http://localhost:5173',
+    origin: origins.length === 1 ? origins[0] : origins,
     credentials: true,
   });
 

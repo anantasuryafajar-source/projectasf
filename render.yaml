@@ -1,0 +1,43 @@
+# =====================================================================
+# Render Blueprint — NestJS backend (Docker).
+# Frontend is deployed separately on Vercel; database/auth on Supabase cloud.
+#
+# Usage: in Render, New > Blueprint, point at this repo. Render reads this
+# file, builds backend/Dockerfile, and prompts for the secret env vars
+# below (sync: false). Fill them from your Supabase cloud project.
+# =====================================================================
+services:
+  - type: web
+    name: ananta-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: starter
+    healthCheckPath: /api/v1/
+    autoDeploy: true
+    envVars:
+      # Render injects PORT automatically; the app reads it via ConfigService.
+      - key: SUPABASE_URL
+        sync: false # https://<project-ref>.supabase.co
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false # service_role key — secret, server only
+      - key: FRONTEND_ORIGIN
+        sync: false # https://<your-app>.vercel.app (comma-separated for previews)
+      - key: VAT_RATE
+        value: "0.11"
+      - key: COGS_ACCOUNT_CODE
+        value: "5000"
+      - key: INVENTORY_ASSET_ACCOUNT_CODE
+        value: "1300"
+      - key: AR_ACCOUNT_CODE
+        value: "1100"
+      - key: SALES_REVENUE_ACCOUNT_CODE
+        value: "4100"
+      - key: VAT_OUT_ACCOUNT_CODE
+        value: "2100"
+      - key: PAYMENT_ACCOUNT_CODE
+        value: "1000"
+      - key: FOREX_GAIN_ACCOUNT_CODE
+        value: "4800"
+      - key: FOREX_LOSS_ACCOUNT_CODE
+        value: "6800"

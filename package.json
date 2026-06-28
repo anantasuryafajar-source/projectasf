@@ -1,0 +1,22 @@
+{
+  "name": "ananta-accounting-erp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Financial & Accounting System Integration (Accurate Core Engine) — Beverage Distribution ERP. Based on PRD v2.0.",
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "concurrently -n backend,frontend -c blue,magenta \"npm:dev:backend\" \"npm:dev:frontend\"",
+    "dev:backend": "npm run start:dev --workspace backend",
+    "dev:frontend": "npm run dev --workspace frontend",
+    "build": "npm run build --workspace backend && npm run build --workspace frontend",
+    "build:backend": "npm run build --workspace backend",
+    "build:frontend": "npm run build --workspace frontend"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0",
+    "supabase": "^2.108.0"
+  }
+}

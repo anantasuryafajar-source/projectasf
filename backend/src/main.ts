@@ -25,7 +25,7 @@ async function bootstrap() {
     config.get<string>('FRONTEND_ORIGIN') ?? 'http://localhost:5173'
   )
     .split(',')
-    .map((o) => o.trim())
+    .map((o) => o.trim().replace(/\/+$/, '')) // tolerate trailing slashes
     .filter(Boolean);
   app.enableCors({
     origin: origins.length === 1 ? origins[0] : origins,
